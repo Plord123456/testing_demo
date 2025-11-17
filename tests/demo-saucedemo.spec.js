@@ -1,7 +1,6 @@
 const { test, expect } = require('@playwright/test');
 
-// Sử dụng test.describe để nhóm các test case lại thành một Test Suite
-test.describe('Kịch bản Đăng nhập Saucedemo', () => {
+test.describe('Test Suite A', () => {
 
     // Hook: Chạy trước mỗi test case
     test.beforeEach(async ({ page }) => {
@@ -25,7 +24,7 @@ test.describe('Kịch bản Đăng nhập Saucedemo', () => {
         await expect(title).toHaveText('Products');
     });
 
-    // Test case 2: (Sửa) Đăng nhập thất bại (sai cả 2)
+    // Test case 2: (Sửa) Đăng nhập thất bại 
     test('TC2: Hiển thị lỗi khi sai cả username và password', async ({ page }) => {
         
         await page.locator('#user-name').fill('wrong_user');
@@ -86,9 +85,10 @@ test.describe('Kịch bản Đăng nhập Saucedemo', () => {
     });
 
 });
-test.describe('Kịch bản - Chức năng Sắp xếp sản phẩm', () => {
 
-    // Hook: Đăng nhập trước mỗi test
+
+test.describe('Test Suite B', () => {
+
     test.beforeEach(async ({ page }) => {
         await page.goto('https://www.saucedemo.com');
         await page.locator('#user-name').fill('standard_user');
@@ -97,7 +97,6 @@ test.describe('Kịch bản - Chức năng Sắp xếp sản phẩm', () => {
         await expect(page).toHaveURL(/.*\/inventory.html/);
     });
 
-    // Hàm trợ giúp để lấy text từ mảng các locators
     async function getItemNames(page) {
         return await page.locator('.inventory_item_name').allTextContents();
     }
@@ -166,7 +165,8 @@ test.describe('Kịch bản - Chức năng Sắp xếp sản phẩm', () => {
         expect(itemPrices).toEqual(sortedPrices);
     });
 });
-test.describe('Kịch bản E2E - Luồng mua hàng', () => {
+
+test.describe('Test Suite C', () => {
 
     // Hook: Chạy trước MỖI test trong nhóm này
     test.beforeEach(async ({ page }) => {
@@ -188,14 +188,12 @@ test.describe('Kịch bản E2E - Luồng mua hàng', () => {
         const productName = 'Sauce Labs Backpack';
 
         // 1. Action: Click nút "Add to cart" của sản phẩm
-        // Chúng ta tìm nút add-to-cart dựa trên tên sản phẩm
         await page.locator('.inventory_item')
             .filter({ hasText: productName })
             .getByRole('button', { name: 'Add to cart' })
             .click();
 
         // 2. Assertion: Kiểm tra icon giỏ hàng
-        // Icon giỏ hàng phải hiển thị số '1'
         const cartBadge = page.locator('.shopping_cart_badge');
         await expect(cartBadge).toHaveText('1');
 
@@ -203,7 +201,6 @@ test.describe('Kịch bản E2E - Luồng mua hàng', () => {
         await page.locator('.shopping_cart_link').click();
 
         // 4. Assertion: Kiểm tra trong trang giỏ hàng
-        // Đảm bảo đã chuyển sang trang cart.html
         await expect(page).toHaveURL(/.*\/cart.html/);
         
         // Đảm bảo sản phẩm ta vừa chọn nằm trong giỏ hàng
@@ -228,11 +225,8 @@ test.describe('Kịch bản E2E - Luồng mua hàng', () => {
         await page.locator('#remove-sauce-labs-backpack').click();
 
         // 4. Assertion: Kiểm tra
-        // Sản phẩm Backpack đã biến mất
         await expect(page.getByText('Sauce Labs Backpack')).toHaveCount(0); 
-        // Sản phẩm Bike Light vẫn còn
         await expect(page.getByText('Sauce Labs Bike Light')).toBeVisible(); 
-        // Icon giỏ hàng cập nhật còn '1'
         await expect(page.locator('.shopping_cart_badge')).toHaveText('1');
     });
 
@@ -272,9 +266,9 @@ test.describe('Kịch bản E2E - Luồng mua hàng', () => {
     });
 });
 
-test.describe('Kịch bản - Tương tác Giỏ hàng & Trang Chi tiết', () => {
+test.describe('Test Suite D', () => {
 
-    // Hook: Đăng nhập trước mỗi test
+    
     test.beforeEach(async ({ page }) => {
         await page.goto('https://www.saucedemo.com');
         await page.locator('#user-name').fill('standard_user');
@@ -346,7 +340,7 @@ test.describe('Kịch bản - Tương tác Giỏ hàng & Trang Chi tiết', () =
         // 1. Setup: Thêm 2 món hàng
         await page.locator('#add-to-cart-sauce-labs-onesie').click();
         await page.locator('#add-to-cart-sauce-labs-fleece-jacket').click();
-        await expect(page.locator('.shopping_cart_badge')).toHaveText('2');
+        await expect(page.locator('.shopping_cart_badge')).toHaveText(2);
 
         // 2. Action: Vào giỏ hàng
         await page.locator('.shopping_cart_link').click();
@@ -356,17 +350,16 @@ test.describe('Kịch bản - Tương tác Giỏ hàng & Trang Chi tiết', () =
         await page.locator('#remove-sauce-labs-onesie').click();
 
         // 4. Assertion: Kiểm tra
-        // Món "Onesie" đã biến mất
         await expect(page.getByText('Sauce Labs Onesie')).toHaveCount(0);
-        // Món "Fleece Jacket" vẫn còn
         await expect(page.getByText('Sauce Labs Fleece Jacket')).toBeVisible();
-        // Icon giỏ hàng cập nhật còn '1'
         await expect(page.locator('.shopping_cart_badge')).toHaveText('1');
     });
 });
-test.describe('Kịch bản - Chức năng Đăng xuất', () => {
 
-    // Hook: Đăng nhập trước mỗi test
+
+test.describe('Test Suite E', () => {
+
+    
     test.beforeEach(async ({ page }) => {
         await page.goto('https://www.saucedemo.com');
         await page.locator('#user-name').fill('standard_user');
@@ -384,11 +377,9 @@ test.describe('Kịch bản - Chức năng Đăng xuất', () => {
         await page.locator('#react-burger-menu-btn').click();
 
         // 2. Action: Click vào link "Logout"
-        // Playwright sẽ tự động chờ cho menu (và link) xuất hiện
         await page.locator('#logout_sidebar_link').click();
 
         // 3. Assertion: Kiểm tra đã quay về trang đăng nhập
-        // URL phải là trang gốc (trang đăng nhập)
         await expect(page).toHaveURL('https://www.saucedemo.com/');
         
         // 4. Assertion (Kiểm tra thêm): Ô username phải hiển thị lại
